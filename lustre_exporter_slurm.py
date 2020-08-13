@@ -38,7 +38,7 @@ def improve_metrics(metrics):
     lines = []
     jobs_info = get_jobs_info()
     for line in metrics.splitlines():
-        m1 = re.match(r'(lustre_job.*){(.*)} (\d+)', line)
+        m1 = re.match(r'(lustre_job.*){(.*)} (.*)', line)
         if m1:
             metric_name = m1.group(1)
             labels = m1.group(2).split(',')
