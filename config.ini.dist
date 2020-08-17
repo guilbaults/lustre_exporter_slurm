@@ -2,3 +2,5 @@
 user = sigui4
 host = beluga1.calculquebec.ca
 private_key = /home/sigui4/.ssh/id_rsa
+[api]
+local_port = 8080

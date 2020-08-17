@@ -85,5 +85,5 @@ if __name__ == '__main__':
     client.load_system_host_keys()
     client.connect(config.get('ssh', 'host'), username=config.get('ssh', 'user'), pkey=private_key)
 
-    web.run_app(app)
+    web.run_app(app, port=config.get('api', 'local_port'))
     client.close()
