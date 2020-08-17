@@ -87,7 +87,10 @@ def improve_metrics(metrics):
 
 if __name__ == '__main__':
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    if len(sys.argv) > 1:
+        config.read(sys.argv[1])
+    else:
+        config.read('config.ini')
 
     private_key = paramiko.RSAKey.from_private_key_file(config.get('ssh', 'private_key'))
     client = paramiko.SSHClient()
