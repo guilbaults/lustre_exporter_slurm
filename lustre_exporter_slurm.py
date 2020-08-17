@@ -8,6 +8,7 @@ import re
 import json
 from cachetools import cached, LRUCache, TTLCache
 import configparser
+import sys
 
 async def handle(request):
     server = request.match_info.get('server')
@@ -22,17 +23,25 @@ app.add_routes([web.get('/{server}', handle)])
 
 @cached(cache=TTLCache(maxsize=10000, ttl=60))
 def get_jobs_info():
-    stdin, stdout, stderr = client.exec_command('/opt/software/slurm/bin/squeue -t r --format %A,%u,%a')
-    reader = csv.reader(stdout)
-    jobs = {}
-    for row in reader:
-        jobs[row[0]] = {'user': row[1], 'account': row[2]}
-    return jobs
+    try:
+        stdin, stdout, stderr = client.exec_command('/opt/software/slurm/bin/squeue -t r --format %A,%u,%a')
+        reader = csv.reader(stdout)
+        jobs = {}
+        for row in reader:
+            jobs[row[0]] = {'user': row[1], 'account': row[2]}
+        return jobs
+    except paramiko.ssh_exception.SSHException as err:
+        print(err)
+        sys.exit(1)
 
 @cached(cache=LRUCache(maxsize=10000))
 def get_username(uid):
-    stdin, stdout, stderr = client.exec_command('/usr/bin/id --name --user {}'.format(uid))
-    return stdout.read().strip().decode('UTF-8')
+    try:
+        stdin, stdout, stderr = client.exec_command('/usr/bin/id --name --user {}'.format(uid))
+        return stdout.read().strip().decode('UTF-8')
+    except paramiko.ssh_exception.SSHException as err:
+        print(err)
+        sys.exit(1)
 
 def improve_metrics(metrics):
     lines = []
