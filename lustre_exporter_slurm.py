@@ -47,6 +47,7 @@ def improve_metrics(metrics):
     lines = []
     jobs_info = get_jobs_info()
     for line in metrics.splitlines():
+        # On each metric line, extract the name, labels and value
         m1 = re.match(r'(lustre_job.*){(.*)} (.*)', line)
         if m1:
             metric_name = m1.group(1)
@@ -54,10 +55,16 @@ def improve_metrics(metrics):
             metric_value = m1.group(3)
 
             labels_d = {}
+            # Recreate the labels so we print all of them again
             for label in labels:
+                # Grab the existing label from the metric
                 m2 = re.match(r'(\w+)="(.+)"', label)
                 if m2:
                     labels_d[m2.group(1)] = m2.group(2)
+
+            # Add the FS name as a label to simplify aggregation queries
+            labels_d['fs'] = labels_d['target'].split('-')[0]
+
             if 'jobid' in labels_d:
                 if labels_d['jobid'].isnumeric():
                     # slurm jobid
@@ -73,6 +80,7 @@ def improve_metrics(metrics):
                         labels_d['user'] = get_username(m3.group(2))
                     except:
                         pass
+                # Repackage the new labels
                 a = []
                 for key, value in labels_d.items():
                     a.append('{}="{}"'.format(key,value))
