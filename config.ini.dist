@@ -1,6 +1,12 @@
-[ssh]
-user = sigui4
-host = beluga1.calculquebec.ca
-private_key = /home/sigui4/.ssh/id_rsa
 [api]
 local_port = 8080
+[slurmdb]
+host = slurmdb
+port = 3306
+dbname = slurmdb
+user = slurmdb
+password = changeme
+job_table = changeme_job_table
+[ldap]
+server = ldap://ldapserver
+search_base = People,dc=computecanada,dc=ca
