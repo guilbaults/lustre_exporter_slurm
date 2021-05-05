@@ -8,5 +8,5 @@ user = slurmdb
 password = changeme
 job_table = changeme_job_table
 [ldap]
-server = ldap://ldapserver
+server = ldaps://ldapserver:636
 search_base = People,dc=computecanada,dc=ca
