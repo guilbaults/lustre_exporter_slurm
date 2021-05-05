@@ -113,12 +113,16 @@ if __name__ == '__main__':
     else:
         config.read('config.ini')
 
+    # autocommit need to be enabled since it affect SELECT queries, without
+    # that setting, a snapshot of the table is taken when the script is
+    # launched so no new jobs are seen.
     db = MySQLdb.connect(
         host=config.get('slurmdb', 'host'),
         port=int(config.get('slurmdb', 'port')),
         user=config.get('slurmdb', 'user'),
         password=config.get('slurmdb', 'password'),
-        db=config.get('slurmdb', 'dbname'))
+        db=config.get('slurmdb', 'dbname'),
+        autocommit=True)
     job_table = config.get('slurmdb', 'job_table')
 
     ldap_conn = ldap.initialize(config.get('ldap', 'server'))
