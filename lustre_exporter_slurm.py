@@ -31,13 +31,10 @@ def get_job_info(jobid):
         job_table)
     cursor.execute(query_string, (jobid,))
     result = cursor.fetchone()
-    try:
-        return {
-            'user': get_username(result['id_user']),
-            'account': result['account'],
-        }
-    except:
-        return None
+    return {
+        'user': get_username(result['id_user']),
+        'account': result['account'],
+    }
 
 
 @cached(cache=LRUCache(maxsize=10000))
