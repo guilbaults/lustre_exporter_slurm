@@ -9,6 +9,7 @@ import json
 from cachetools import cached, LRUCache
 import configparser
 import sys
+import pwd
 
 async def handle(request):
     server = request.match_info.get('server')
@@ -43,12 +44,20 @@ def get_username(uid):
     if int(uid) == 0:
         return 'root'
 
-    result = ldap_conn.search_s(
-        'ou=People,dc=computecanada,dc=local',
-        ldap.SCOPE_SUBTREE,
-        '(uidNumber={})'.format(uid),
-        ['uid'])
-    return result[0][1]['uid'][0].decode('utf-8')
+    if usernames == 'ldap':
+        result = ldap_conn.search_s(
+            'ou=People,dc=computecanada,dc=local',
+            ldap.SCOPE_SUBTREE,
+            '(uidNumber={})'.format(uid),
+            ['uid'])
+        return result[0][1]['uid'][0].decode('utf-8')
+
+    # no ldap - ask OS
+    user = pwd.getpwuid(int(uid))
+    if user: return user.pw_name
+
+    # last resort
+    return "<unknown>"
 
 
 def improve_metrics(metrics):
@@ -122,6 +131,9 @@ if __name__ == '__main__':
         autocommit=True)
     job_table = config.get('slurmdb', 'job_table')
 
-    ldap_conn = ldap.initialize(config.get('ldap', 'server'))
-    ldap_search_base = config.get('ldap', 'search_base')
+    usernames = config.get('api', 'usernames', fallback=False)
+    if usernames == 'ldap':
+       ldap_conn = ldap.initialize(config.get('ldap', 'server'))
+       ldap_search_base = config.get('ldap', 'search_base')
+
     web.run_app(app, port=config.get('api', 'local_port'))

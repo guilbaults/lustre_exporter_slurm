@@ -1,5 +1,6 @@
 [api]
 local_port = 8080
+usernames = ldap
 [slurmdb]
 host = slurmdb
 port = 3306
