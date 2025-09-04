@@ -124,7 +124,7 @@ if __name__ == '__main__':
     # launched so no new jobs are seen.
     db = MySQLdb.connect(
         host=config.get('slurmdb', 'host'),
-        port=int(config.get('slurmdb', 'port')),
+        port=config.getint('slurmdb', 'port'),
         user=config.get('slurmdb', 'user'),
         password=config.get('slurmdb', 'password'),
         db=config.get('slurmdb', 'dbname'),
@@ -136,4 +136,4 @@ if __name__ == '__main__':
        ldap_conn = ldap.initialize(config.get('ldap', 'server'))
        ldap_search_base = config.get('ldap', 'search_base')
 
-    web.run_app(app, port=config.get('api', 'local_port'))
+    web.run_app(app, port=config.getint('api', 'local_port'))
