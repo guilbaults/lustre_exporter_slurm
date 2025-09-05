@@ -15,7 +15,7 @@ async def handle(request):
     server = request.match_info.get('server')
     async with aiohttp.ClientSession() as session:
         url = 'http://{}:9169/metrics'.format(server)
-        async with session.get(url) as resp:
+        async with session.get(url, **aiohttp_kwargs) as resp:
             metrics = await resp.text()
             text = str("\n".join(improve_metrics(metrics)))
     return web.Response(text=text)
@@ -135,5 +135,11 @@ if __name__ == '__main__':
     if usernames == 'ldap':
        ldap_conn = ldap.initialize(config.get('ldap', 'server'))
        ldap_search_base = config.get('ldap', 'search_base')
+
+    aiohttp_kwargs = {}
+    proxy = config.get('aiohttp','proxy',fallback=None)
+    if proxy:
+      aiohttp_kwargs["proxy"] = proxy
+      aiohttp_kwargs["headers"] = {"X-Prometheus-Scrape-Timeout-Seconds": "5"}
 
     web.run_app(app, port=config.getint('api', 'local_port'))
