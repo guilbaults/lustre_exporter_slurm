@@ -46,7 +46,7 @@ def get_username(uid):
 
     if usernames == 'ldap':
         result = ldap_conn.search_s(
-            'ou=People,dc=computecanada,dc=local',
+            ldap_search_base,
             ldap.SCOPE_SUBTREE,
             '(uidNumber={})'.format(uid),
             ['uid'])
