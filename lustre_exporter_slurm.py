@@ -30,7 +30,11 @@ def get_job_info(jobid):
     # table name, only "normal" SQL parameters
     query_string = "select id_user,account from {} where id_job=%s".format(
         job_table)
-    cursor.execute(query_string, (jobid,))
+    try:
+        cursor.execute(query_string, (jobid,))
+    except MySQLdb.Error as e:
+        print(e)
+        sys.exit(1)
     result = cursor.fetchone()
     return {
         'user': get_username(result['id_user']),
