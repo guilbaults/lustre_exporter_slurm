@@ -11,3 +11,6 @@ job_table = changeme_job_table
 [ldap]
 server = ldaps://ldapserver:636
 search_base = People,dc=computecanada,dc=ca
+# Required when using https://github.com/prometheus-community/PushProx
+# [aiohttp]
+# proxy = http://PushProx:8085/
