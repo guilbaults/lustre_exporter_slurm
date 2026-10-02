@@ -20,6 +20,8 @@ async def handle(request):
             text = str("\n".join(improve_metrics(metrics)))
     return web.Response(text=text)
 
+async def health(request):
+    return web.Response(text='OK')
 
 @cached(cache=LRUCache(maxsize=100000))
 def get_job_info(jobid):
@@ -115,7 +117,10 @@ def improve_metrics(metrics):
 
 if __name__ == '__main__':
     app = web.Application()
-    app.add_routes([web.get('/{server}', handle)])
+    app.add_routes([
+        web.get('/health', health),
+        web.get('/{server}', handle),
+    ])
 
     config = configparser.ConfigParser()
     if len(sys.argv) > 1:
